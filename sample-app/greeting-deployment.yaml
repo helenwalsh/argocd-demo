@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-greeting
+spec:
+  selector:
+    matchLabels:
+      app: pg-greeting
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: pg-greeting
+    spec:
+      containers:
+      - name: pg-greeting
+        image: docker.io/helenwalshie/spring-postgres:v1-release
+        ports:
+        - containerPort: 8080
+        env:
+        - name: POSTGRES_DB
+          valueFrom: { secretKeyRef: { name: postgres-secret, key: database } }
+        - name: POSTGRES_USER
+          valueFrom: { secretKeyRef: { name: postgres-secret, key: username } }
+        - name: POSTGRES_PASSWORD
+          valueFrom: { secretKeyRef: { name: postgres-secret, key: password } }
+        - name: POSTGRES_HOST
+          valueFrom: { secretKeyRef: { name: postgres-secret, key: host } }
+          resources:
+            limits:
+              memory: 2Gi
+              cpu: "1"
